@@ -1,0 +1,11 @@
+$schema: https://api.gitbook.com/gitbook-docs.yaml
+site:
+  title: Dziabub Knowledge
+  structure:
+    - type: space
+      key: space-1
+      title: Dziabub Knowledge
+      path: dziabub-knowledge
+      default: true
+      content:
+        directory: ./dziabub-knowledge
