@@ -9,7 +9,17 @@ BACKGROUND = "#FFF7E8"
 INK = "#34405C"
 PURPLE = "#7655BC"
 GREEN = "#23846B"
-WORDS = ("KOT", "DOM", "MAMA", "TATA", "LAS", "OSA", "SOK", "OKO", "NOS", "ALA")
+WORDS = (
+    "KOT", "DOM", "MAMA", "TATA", "LAS", "OSA", "SOK", "OKO", "NOS", "ALA",
+    "KREDKA", "KLOCKI", "LALKA", "FARBY", "ZABAWA", "GRUPA",
+    "PIERNIK", "KOPERNIK", "RATUSZ", "MOST",
+    "KURA", "KROWA", "SIANO", "POLE", "SAD", "TRAKTOR",
+    "PRZEDSZKOLE", "DZIECI", "PANI", "PAN", "SALA", "KREDKI", "PUZZLE",
+    "PLASTELINA", "RYSUNEK", "PIOSENKA", "BULWAR", "RZEKA", "GOTYK",
+    "FLISAK", "KATEDRA", "PLANETA", "TEATR", "MUZEUM", "MIASTO",
+    "WYCIECZKA", "ROLNIK", "MLEKO", "KACZKA", "KOZA", "OWCA", "KOGUT",
+    "STAW", "DOMEK", "OBORA", "STAJNIA",
+)
 PRAISE = ("Brawo!", "Wspaniale!", "Super!", "Pięknie!", "Świetnie Ci idzie!")
 
 
@@ -28,6 +38,7 @@ class KeyboardGame:
         self.pending = None
         self.waiting = False
         self.last_target = None
+        self.used_words = set()
         self.key_labels = {}
         self.mode_buttons = {}
         self.big_font = font.Font(family="Arial", size=76, weight="bold")
@@ -120,6 +131,7 @@ class KeyboardGame:
         self.mode = mode
         self.score = 0
         self.last_target = None
+        self.used_words.clear()
         for name, button in self.mode_buttons.items():
             button.configure(bg=PURPLE if name == mode else "#E7E0F4",
                              fg="white" if name == mode else INK)
@@ -132,10 +144,19 @@ class KeyboardGame:
 
     def next_task(self):
         self.pending = None
+        if self.score == 10:
+            self.score = 0
+            self.last_target = None
+            self.used_words.clear()
+            self.update_stars()
         choices = {"Litery": tuple("ABCDEFGHIJKLMNOPQRSTUVWXYZ"),
                    "Cyferki": tuple("0123456789"), "Słowa": WORDS}[self.mode]
+        if self.mode == "Słowa":
+            choices = tuple(word for word in choices if word not in self.used_words)
         self.target = random.choice([item for item in choices if item != self.last_target])
         self.last_target = self.target
+        if self.mode == "Słowa":
+            self.used_words.add(self.target)
         self.position = 0
         self.waiting = False
         self.draw_cat()
