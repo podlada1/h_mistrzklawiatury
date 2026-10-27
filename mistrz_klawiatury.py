@@ -2,7 +2,7 @@
 
 import random
 import tkinter as tk
-from tkinter import font
+from tkinter import font, simpledialog
 
 
 BACKGROUND = "#FFF7E8"
@@ -14,8 +14,9 @@ PRAISE = ("Brawo!", "Wspaniale!", "Super!", "Pięknie!", "Świetnie Ci idzie!")
 
 
 class KeyboardGame:
-    def __init__(self, root):
+    def __init__(self, root, player_name=""):
         self.root = root
+        self.player_name = player_name
         self.root.title("Mistrzyni klawiatury — zabawa w pisanie")
         self.root.geometry("1000x800")
         self.root.minsize(820, 720)
@@ -184,8 +185,16 @@ class KeyboardGame:
         if self.mode == "Słowa":
             self.word_progress.configure(text=" ".join(self.target))
         celebration = self.score % 10 == 0
-        self.message.configure(text="10 sukcesów! Kotek jest z Ciebie dumny!" if celebration
-                               else random.choice(PRAISE), fg=GREEN)
+        praise = (
+            "10 sukcesów! Kotek jest z Ciebie dumny!"
+            if celebration
+            else random.choice(PRAISE)
+        )
+
+        if self.player_name:
+            praise = f"{self.player_name}, {praise}"
+
+        self.message.configure(text=praise, fg=GREEN)
         self.pending = self.root.after(2400 if celebration else 1200, self.next_task)
 
     def toggle_fullscreen(self, event=None):
@@ -200,7 +209,17 @@ class KeyboardGame:
 
 def main():
     root = tk.Tk()
-    KeyboardGame(root)
+    root.withdraw()  # Hide the game window while asking.
+
+    name = simpledialog.askstring(
+        "Witaj!",
+        "Podaj swoje imię:",
+        parent=root,
+    )
+    player_name = (name or "").strip()
+
+    KeyboardGame(root, player_name)
+    root.deiconify()  # Show the game.
     root.mainloop()
 
 
